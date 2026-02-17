@@ -10,6 +10,7 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
+app.options(/.*/, cors({ origin: true, credentials: true })); // ✅ FIX
 app.use(express.json());
 app.use(morgan('dev'));
 

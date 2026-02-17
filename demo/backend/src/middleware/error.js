@@ -3,7 +3,10 @@ exports.notFound = (_req, res) => res.status(404).json({ message: 'Route not fou
 exports.errorHandler = (err, _req, res, _next) => {
   console.error(err);
 
-  // Handle duplicate email nicely
+  if (err?.name === 'CastError') {
+    return res.status(400).json({ message: 'Invalid id format' });
+  }
+
   if (err?.code === 11000) {
     return res.status(409).json({ message: 'Duplicate key error', details: err.keyValue });
   }
