@@ -1,6 +1,8 @@
+// App.js
 import React, { useMemo, useState } from 'react';
 import FriendList from './FriendList';
 import ChatBox from './ChatBox';
+import ProfileModal from './ProfileModal';
 import './App.css';
 
 const App = () => {
@@ -11,6 +13,7 @@ const App = () => {
   ]);
 
   const [selectedFriend, setSelectedFriend] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   // Basic demo feed data (later: fetch from API)
   const posts = useMemo(
@@ -37,17 +40,17 @@ const App = () => {
 
   return (
     <div className="lc-app">
-      <TopNav />
+      <TopNav onOpenProfile={() => setProfileOpen(true)} />
 
       <main className="lc-shell">
         <aside className="lc-left">
-          <ProfileCard />
+          <ProfileCard onOpenProfile={() => setProfileOpen(true)} />
           <QuickLinks />
           <CourseCard />
         </aside>
 
         <section className="lc-center" aria-label="Feed">
-          <Composer />
+          <Composer onOpenProfile={() => setProfileOpen(true)} />
           <Feed posts={posts} />
         </section>
 
@@ -57,40 +60,60 @@ const App = () => {
         </aside>
       </main>
 
+      {/* Chat drawer */}
       {selectedFriend && (
         <ChatBox selectedFriend={selectedFriend} onClose={() => setSelectedFriend(null)} />
       )}
+
+      {/* Profile create/edit modal */}
+      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
 };
 
-const TopNav = () => (
+const TopNav = ({ onOpenProfile }) => (
   <header className="lc-topnav">
     <div className="lc-topnav__inner">
       <div className="lc-brand">LitConnect</div>
 
       <div className="lc-search" role="search" aria-label="Search">
-        <span className="lc-search__icon" aria-hidden="true">🔎</span>
+        <span className="lc-search__icon" aria-hidden="true">
+          🔎
+        </span>
         <input placeholder="Search people, posts, courses..." />
       </div>
 
       <nav className="lc-nav" aria-label="Primary navigation">
-        <button className="lc-nav__item" type="button">Home</button>
-        <button className="lc-nav__item" type="button">My Network</button>
-        <button className="lc-nav__item" type="button">Learning</button>
-        <button className="lc-nav__item" type="button">Messages</button>
-        <button className="lc-nav__item" type="button">Notifications</button>
-        <button className="lc-nav__item lc-nav__me" type="button">Me</button>
+        <button className="lc-nav__item" type="button">
+          Home
+        </button>
+        <button className="lc-nav__item" type="button">
+          My Network
+        </button>
+        <button className="lc-nav__item" type="button">
+          Learning
+        </button>
+        <button className="lc-nav__item" type="button">
+          Messages
+        </button>
+        <button className="lc-nav__item" type="button">
+          Notifications
+        </button>
+        <button className="lc-nav__item lc-nav__me" type="button" onClick={onOpenProfile}>
+          Me
+        </button>
       </nav>
     </div>
   </header>
 );
 
-const ProfileCard = () => (
+const ProfileCard = ({ onOpenProfile }) => (
   <div className="lc-card">
     <div className="lc-profileCover" />
     <div className="lc-profileBody">
-      <div className="lc-avatar" aria-hidden="true">HL</div>
+      <div className="lc-avatar" aria-hidden="true">
+        HL
+      </div>
       <div className="lc-profileMeta">
         <div className="lc-profileName">Harrison Le</div>
         <div className="lc-profileHeadline">Student • Aspiring SWE • LitConnect</div>
@@ -109,7 +132,12 @@ const ProfileCard = () => (
 
       <div className="lc-divider" />
 
-      <button className="lc-linkBtn" type="button">Saved items</button>
+      <button className="lc-linkBtn" type="button" onClick={onOpenProfile}>
+        Edit profile
+      </button>
+      <button className="lc-linkBtn" type="button">
+        Saved items
+      </button>
     </div>
   </div>
 );
@@ -118,10 +146,18 @@ const QuickLinks = () => (
   <div className="lc-card">
     <div className="lc-cardTitle">Shortcuts</div>
     <div className="lc-list">
-      <button className="lc-linkBtn" type="button">Groups</button>
-      <button className="lc-linkBtn" type="button">Events</button>
-      <button className="lc-linkBtn" type="button">Internships</button>
-      <button className="lc-linkBtn" type="button">Career Center</button>
+      <button className="lc-linkBtn" type="button">
+        Groups
+      </button>
+      <button className="lc-linkBtn" type="button">
+        Events
+      </button>
+      <button className="lc-linkBtn" type="button">
+        Internships
+      </button>
+      <button className="lc-linkBtn" type="button">
+        Career Center
+      </button>
     </div>
   </div>
 );
@@ -138,17 +174,21 @@ const CourseCard = () => (
         <div className="lc-miniTitle">MATH 251 — Calculus</div>
         <div className="lc-miniSub">Next: Homework 4 • Due Sun</div>
       </div>
-      <button className="lc-primaryBtn" type="button">Go to Learning</button>
+      <button className="lc-primaryBtn" type="button">
+        Go to Learning
+      </button>
     </div>
   </div>
 );
 
-const Composer = () => (
+const Composer = ({ onOpenProfile }) => (
   <div className="lc-card lc-composer">
     <div className="lc-composerTop">
-      <div className="lc-avatar lc-avatar--small" aria-hidden="true">HL</div>
-      <button className="lc-composerInput" type="button">
-        Start a post
+      <div className="lc-avatar lc-avatar--small" aria-hidden="true">
+        HL
+      </div>
+      <button className="lc-composerInput" type="button" onClick={onOpenProfile}>
+        Start a post (login to post)
       </button>
     </div>
 
@@ -167,11 +207,17 @@ const Feed = ({ posts }) => (
       <article key={p.id} className="lc-card lc-post">
         <div className="lc-postHeader">
           <div className="lc-avatar lc-avatar--small" aria-hidden="true">
-            {p.author.split(' ').map(s => s[0]).slice(0,2).join('')}
+            {p.author
+              .split(' ')
+              .map((s) => s[0])
+              .slice(0, 2)
+              .join('')}
           </div>
           <div>
             <div className="lc-postAuthor">{p.author}</div>
-            <div className="lc-postMeta">{p.authorHeadline} • {p.time}</div>
+            <div className="lc-postMeta">
+              {p.authorHeadline} • {p.time}
+            </div>
           </div>
         </div>
 
@@ -205,6 +251,7 @@ const PeopleYouMayKnow = ({ friends, onSelectFriend }) => (
 
     {/* Reuse your FriendList for click-to-chat */}
     <FriendList friends={friends} onSelectFriend={(friend) => onSelectFriend(friend)} />
+
     <div className="lc-hint">Tip: click a friend to open chat</div>
   </div>
 );

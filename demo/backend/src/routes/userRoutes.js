@@ -27,3 +27,14 @@ router.get('/', ctrl.listUsers);
 router.get('/:id', ctrl.getUserById);
 
 module.exports = router;
+
+const { requireAuth } = require('../middleware/auth');
+
+// ... keep your existing routes (register/login)
+
+router.get('/me', requireAuth, ctrl.getMe);
+router.put('/me', requireAuth, ctrl.updateMe);
+
+// keep these last
+router.get('/', ctrl.listUsers);
+router.get('/:id', ctrl.getUserById);

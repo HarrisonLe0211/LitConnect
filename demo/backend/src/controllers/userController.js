@@ -66,3 +66,34 @@ exports.getUserById = async (req, res, next) => {
     return next(err);
   }
 };
+
+exports.getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.updateMe = async (req, res, next) => {
+  try {
+    const allowed = ['fullName', 'headline', 'school'];
+    const updates = {};
+
+    for (const k of allowed) {
+      if (typeof req.body[k] === 'string') updates[k] = req.body[k].trim();
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: updates },
+      { new: true }
+    );
+
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+};
