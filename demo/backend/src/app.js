@@ -10,12 +10,13 @@ const app = express();
 
 const corsOptions = {
   origin(origin, callback) {
+    // Allow requests with no origin (Postman, curl, server-to-server)
     if (!origin) return callback(null, true);
 
     const allowed =
       /^https:\/\/.*-3000\.app\.github\.dev$/.test(origin) ||
-      /^http:\/\/localhost:\d+$/.test(origin) ||
-      /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+      /^https?:\/\/localhost:\d+$/.test(origin) ||
+      /^https?:\/\/127\.0\.0\.1:\d+$/.test(origin);
 
     if (allowed) return callback(null, true);
 
