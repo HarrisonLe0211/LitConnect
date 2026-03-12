@@ -1,8 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+
 import FriendList from './FriendList';
 import ChatBox from './ChatBox';
 import ProfileModal from './ProfileModal';
+import LearningPage from './LearningPage';
 import { safeMe } from './api';
+
 import './App.css';
 
 const App = () => {
@@ -14,12 +18,9 @@ const App = () => {
 
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
-
-  // ✅ Logged-in user state
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // On refresh: if token exists, fetch /me and populate UI
     safeMe().then((res) => {
       if (res?.user) setCurrentUser(res.user);
     });
@@ -49,34 +50,27 @@ const App = () => {
 
   return (
     <div className="lc-app">
-      <TopNav
-        user={currentUser}
-        onOpenProfile={() => setProfileOpen(true)}
-      />
+      <TopNav user={currentUser} onOpenProfile={() => setProfileOpen(true)} />
 
-      <main className="lc-shell">
-        <aside className="lc-left">
-          <ProfileCard
-            user={currentUser}
-            onOpenProfile={() => setProfileOpen(true)}
-          />
-          <QuickLinks />
-          <CourseCard />
-        </aside>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              currentUser={currentUser}
+              friends={friends}
+              posts={posts}
+              onOpenProfile={() => setProfileOpen(true)}
+              onSelectFriend={setSelectedFriend}
+            />
+          }
+        />
 
-        <section className="lc-center" aria-label="Feed">
-          <Composer
-            user={currentUser}
-            onOpenProfile={() => setProfileOpen(true)}
-          />
-          <Feed posts={posts} />
-        </section>
-
-        <aside className="lc-right">
-          <NewsCard />
-          <PeopleYouMayKnow friends={friends} onSelectFriend={setSelectedFriend} />
-        </aside>
-      </main>
+        <Route
+          path="/learning"
+          element={<LearningPage currentUser={currentUser} />}
+        />
+      </Routes>
 
       {selectedFriend && (
         <ChatBox selectedFriend={selectedFriend} onClose={() => setSelectedFriend(null)} />
@@ -85,12 +79,32 @@ const App = () => {
       <ProfileModal
         open={profileOpen}
         onClose={() => setProfileOpen(false)}
-        onAuth={(user) => setCurrentUser(user)}     // ✅ update homepage on login/register/save
-        onLogout={() => setCurrentUser(null)}       // ✅ clear homepage on logout
+        onAuth={(user) => setCurrentUser(user)}
+        onLogout={() => setCurrentUser(null)}
       />
     </div>
   );
 };
+
+const HomePage = ({ currentUser, friends, posts, onOpenProfile, onSelectFriend }) => (
+  <main className="lc-shell">
+    <aside className="lc-left">
+      <ProfileCard user={currentUser} onOpenProfile={onOpenProfile} />
+      <QuickLinks />
+      <CourseCard />
+    </aside>
+
+    <section className="lc-center" aria-label="Feed">
+      <Composer user={currentUser} onOpenProfile={onOpenProfile} />
+      <Feed posts={posts} />
+    </section>
+
+    <aside className="lc-right">
+      <NewsCard />
+      <PeopleYouMayKnow friends={friends} onSelectFriend={onSelectFriend} />
+    </aside>
+  </main>
+);
 
 const initialsFromName = (name = '') =>
   name
@@ -101,29 +115,35 @@ const initialsFromName = (name = '') =>
     .slice(0, 2)
     .join('') || 'ME';
 
-const TopNav = ({ user, onOpenProfile }) => (
-  <header className="lc-topnav">
-    <div className="lc-topnav__inner">
-      <div className="lc-brand">LitConnect</div>
+const TopNav = ({ user, onOpenProfile }) => {
+  const navigate = useNavigate();
 
-      <div className="lc-search" role="search" aria-label="Search">
-        <span className="lc-search__icon" aria-hidden="true">🔎</span>
-        <input placeholder="Search people, posts, courses..." />
+  return (
+    <header className="lc-topnav">
+      <div className="lc-topnav__inner">
+        <div className="lc-brand" role="button" tabIndex={0} onClick={() => navigate('/')}>
+          LitConnect
+        </div>
+
+        <div className="lc-search" role="search" aria-label="Search">
+          <span className="lc-search__icon" aria-hidden="true">🔎</span>
+          <input placeholder="Search people, posts, courses..." />
+        </div>
+
+        <nav className="lc-nav" aria-label="Primary navigation">
+          <button className="lc-nav__item" type="button" onClick={() => navigate('/')}>Home</button>
+          <button className="lc-nav__item" type="button">My Network</button>
+          <button className="lc-nav__item" type="button" onClick={() => navigate('/learning')}>Learning</button>
+          <button className="lc-nav__item" type="button">Messages</button>
+          <button className="lc-nav__item" type="button">Notifications</button>
+          <button className="lc-nav__item lc-nav__me" type="button" onClick={onOpenProfile}>
+            {user?.fullName ? user.fullName.split(' ')[0] : 'Me'}
+          </button>
+        </nav>
       </div>
-
-      <nav className="lc-nav" aria-label="Primary navigation">
-        <button className="lc-nav__item" type="button">Home</button>
-        <button className="lc-nav__item" type="button">My Network</button>
-        <button className="lc-nav__item" type="button">Learning</button>
-        <button className="lc-nav__item" type="button">Messages</button>
-        <button className="lc-nav__item" type="button">Notifications</button>
-        <button className="lc-nav__item lc-nav__me" type="button" onClick={onOpenProfile}>
-          {user?.fullName ? user.fullName.split(' ')[0] : 'Me'}
-        </button>
-      </nav>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 const ProfileCard = ({ user, onOpenProfile }) => {
   const fullName = user?.fullName || 'Guest';
@@ -135,17 +155,11 @@ const ProfileCard = ({ user, onOpenProfile }) => {
     <div className="lc-card">
       <div className="lc-profileCover" />
       <div className="lc-profileBody">
-        <div className="lc-avatar" aria-hidden="true">
-          {initialsFromName(fullName)}
-        </div>
+        <div className="lc-avatar" aria-hidden="true">{initialsFromName(fullName)}</div>
 
         <div className="lc-profileMeta">
           <div className="lc-profileName">{fullName}</div>
-
-          {/* ✅ show role + headline + school */}
-          <div className="lc-profileHeadline">
-            {headline}
-          </div>
+          <div className="lc-profileHeadline">{headline}</div>
           <div className="lc-profileHeadline" style={{ marginTop: 4 }}>
             {school} • {role}
           </div>
@@ -153,14 +167,8 @@ const ProfileCard = ({ user, onOpenProfile }) => {
 
         <div className="lc-divider" />
 
-        <div className="lc-statRow">
-          <span>Profile views</span>
-          <strong>28</strong>
-        </div>
-        <div className="lc-statRow">
-          <span>Post impressions</span>
-          <strong>312</strong>
-        </div>
+        <div className="lc-statRow"><span>Profile views</span><strong>28</strong></div>
+        <div className="lc-statRow"><span>Post impressions</span><strong>312</strong></div>
 
         <div className="lc-divider" />
 
@@ -185,22 +193,30 @@ const QuickLinks = () => (
   </div>
 );
 
-const CourseCard = () => (
-  <div className="lc-card">
-    <div className="lc-cardTitle">My Courses</div>
-    <div className="lc-miniList">
-      <div className="lc-miniItem">
-        <div className="lc-miniTitle">CS 161 — Intro to Programming</div>
-        <div className="lc-miniSub">Next: Quiz 2 • Due Fri</div>
+const CourseCard = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="lc-card">
+      <div className="lc-cardTitle">My Courses</div>
+      <div className="lc-miniList">
+        <div className="lc-miniItem">
+          <div className="lc-miniTitle">CS 161 — Intro to Programming</div>
+          <div className="lc-miniSub">Next: Quiz 2 • Due Fri</div>
+        </div>
+        <div className="lc-miniItem">
+          <div className="lc-miniTitle">MATH 251 — Calculus</div>
+          <div className="lc-miniSub">Next: Homework 4 • Due Sun</div>
+        </div>
+
+        {/* ✅ now navigates */}
+        <button className="lc-primaryBtn" type="button" onClick={() => navigate('/learning')}>
+          Go to Learning
+        </button>
       </div>
-      <div className="lc-miniItem">
-        <div className="lc-miniTitle">MATH 251 — Calculus</div>
-        <div className="lc-miniSub">Next: Homework 4 • Due Sun</div>
-      </div>
-      <button className="lc-primaryBtn" type="button">Go to Learning</button>
     </div>
-  </div>
-);
+  );
+};
 
 const Composer = ({ user, onOpenProfile }) => (
   <div className="lc-card lc-composer">

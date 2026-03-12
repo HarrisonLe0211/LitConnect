@@ -8,13 +8,33 @@ const { notFound, errorHandler } = require('./middleware/error');
 
 const app = express();
 
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+
+    const allowed =
+      /^https:\/\/.*-3000\.app\.github\.dev$/.test(origin) ||
+      /^http:\/\/localhost:\d+$/.test(origin) ||
+      /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+
+    if (allowed) return callback(null, true);
+
+    return callback(new Error(`CORS not allowed for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+};
+
 app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
-app.options(/.*/, cors({ origin: true, credentials: true })); // ✅ FIX
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.get('/health', (_req, res) => res.json({ ok: true }));
+app.get('/health', (_req, res) => {
+  res.json({ ok: true });
+});
 
 app.use('/api/users', userRoutes);
 
