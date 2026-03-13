@@ -209,3 +209,251 @@ body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui,
 /* Right rail */
 .lc-bullets{ margin: 10px 0 12px; padding: 0 22px 12px; color:#374151; }
 .lc-hint{ padding: 0 12px 12px; color: var(--muted); font-size: 12px; }
+
+/* ---------------- Canvas-ish E-Learning page ---------------- */
+.lc-learning {
+  min-height: calc(100vh - 60px);
+  background: var(--bg);
+}
+
+.lc-learningTop {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lc-linkPlain {
+  text-decoration: none;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.lc-learningCrumb {
+  margin-left: 10px;
+  color: #374151;
+  font-weight: 700;
+}
+
+.lc-learningTopRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lc-learningUser {
+  color: #374151;
+  font-weight: 600;
+}
+
+.lc-learningCourseSelect {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+.lc-learningGrid {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 14px 18px;
+  display: grid;
+  grid-template-columns: 240px 1fr 300px;
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .lc-learningGrid {
+    grid-template-columns: 1fr;
+  }
+  .lc-learningNav,
+  .lc-learningSide {
+    display: none;
+  }
+}
+
+.lc-learningNav {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.lc-learningNavTitle {
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.lc-learningNavSub {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.lc-learningNavList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lc-learningNavItem {
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.lc-learningNavItem:hover {
+  background: #f7f7f7;
+  border-color: #f0f0f0;
+}
+
+.lc-learningNavItem.is-active {
+  background: #eef3f8;
+  border-color: #e5e7eb;
+  font-weight: 700;
+}
+
+.lc-learningMain {
+  background: transparent;
+}
+
+.lc-learningHeader {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lc-learningTitle {
+  margin: 0;
+  font-size: 18px;
+}
+
+.lc-learningActions button {
+  margin-left: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.lc-learningActions button:hover {
+  background: #f7f7f7;
+}
+
+.lc-learningModules {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lc-moduleCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lc-moduleHeader {
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.lc-moduleMeta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.lc-moduleList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lc-moduleItem {
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 90px 1fr 70px;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid #f0f0f0;
+}
+
+.lc-moduleType {
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid #e5e7eb;
+  padding: 4px 8px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.lc-moduleItemTitle {
+  font-weight: 600;
+  color: #111827;
+}
+
+.lc-moduleBtn {
+  justify-self: end;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.lc-moduleBtn:hover {
+  background: #f7f7f7;
+}
+
+.lc-learningSide {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lc-sideCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.lc-sideTitle {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.lc-sideList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lc-sideItemTitle {
+  font-weight: 700;
+}
+
+.lc-sideItemSub {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
